@@ -1,0 +1,13 @@
+models:
+  Category:
+    name: string
+    parent_id: bigInteger nullable unsigned foreign:categories.id
+    relationships:
+      belongsToMany: Post
+
+  Post:
+    title: string
+    slug: string
+    content: longText
+    relationships:
+      belongsToMany: Category

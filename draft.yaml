@@ -1,9 +1,74 @@
 models:
-  Post:
-    title: string:400
-    content: longtext
-    published_at: nullable timestamp
+  Category:
+    name: string
+    slug: string unique
+    parent_id: id foreign:categories nullable onDelete:cascade
+    is_visible: boolean default:false
+    description: longText nullable
+    softDeletes
+    relationships:
+      belongsTo: Category:parent
+      hasMany: Category:child
+      belongsToMany: Product
 
-  Comment:
-    content: longtext
-    published_at: nullable timestamp
+  Brand:
+    name: string
+    slug: string unique
+    url: string nullable
+    primary_hex: string nullable
+    is_visible: boolean default:false
+    description: longText nullable
+    softDeletes
+    relationships:
+      hasMany: Product
+
+  Product:
+    brand_id: id foreign:brands onDelete:cascade
+    name: string
+    slug: string unique
+    sku: string unique
+    image: string
+    description: longText nullable
+    quantity: unsignedBigInteger
+    price: decimal:10,2
+    is_visible: boolean default:false
+    is_featured: boolean default:false
+    type: enum:deliverable,downloadable default:deliverable
+    published_at: date
+    softDeletes
+    relationships:
+      belongsTo: Brand
+      belongsToMany: Category
+
+  Customer:
+    name: string
+    email: string unique
+    phone: string
+    date_of_birth: date
+    address: string
+    zip_code: string
+    string: city
+    softDeletes
+    relationships:
+      HasMany: Order
+
+  Order:
+    customer_id: id foreign:customers onDelete:cascade
+    number: string unique
+    total_price: decimal:10,2
+    status: enum:pending,processing,completed,declined default:pending
+    shipping_price: decimal nullable
+    notes: longText
+    softDeletes
+    relationships:
+      belongsTo: Customer
+      HasMany: OrderItem:item
+
+  OrderItem:
+    order_id: id foreign:orders onDelete:cascade
+    product_id: id foreign:products onDelete:cascade
+    quantity: unsignedBigInteger
+    unit_price: decimal:10,2
+    softDeletes
+
+seeders: Category, Product, Product, Customer, Order, OrderItem
